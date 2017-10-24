@@ -1,4 +1,17 @@
 (function() {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = ResizeObserver;
+  } else {
+    var isSupported = window.IntersectionObserver &&
+      window.Map && 'pointerEvents' in document.documentElement.style;
+
+    if (!window.ResizeObserver && isSupported) {
+      window.ResizeObserver = ResizeObserver;
+    } else {
+      return;
+    }
+  }
+
   function ResizeObserver(callback) {
     this.__callback = callback;
     this.__observers = new Map();
@@ -16,7 +29,7 @@
 
     var resizer = document.createElement('x-y-z-resize-observer');
     // Maybe change pointer-events + opacity to visibility: hidden;
-    resizer.style.cssText = 'display:block;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events: none;opacity: 0;'
+    resizer.style.cssText = 'display:block;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity: 0;'
 
     target.appendChild(resizer);
     observer.__resizer = resizer;
@@ -44,11 +57,7 @@
     this.__observers.clear();
   };
 
-  window.ResizeObserver2 = ResizeObserver;
-
   function mapEntry(entry, target) {
-    console.log(entry);
-
     var paddingRight = entry.boundingClientRect.right - entry.intersectionRect.right;
     var paddingLeft = entry.boundingClientRect.width - entry.intersectionRect.width - paddingRight;
     var paddingBottom = entry.boundingClientRect.bottom - entry.intersectionRect.bottom;
@@ -77,8 +86,8 @@
   function buildThresholdList(numSteps) {
     var thresholds = [];
 
-    for (var i=1.0; i<=numSteps; i++) {
-      var ratio = i/numSteps;
+    for (var i = 1; i <= numSteps; i++) {
+      var ratio = i / numSteps;
       thresholds.push(ratio);
     }
 
